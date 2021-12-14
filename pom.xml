@@ -51,6 +51,7 @@
     <properties>
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.compiler.source>1.8</maven.compiler.source>
+		<assembly.skipAssembly>true</assembly.skipAssembly>
         <elasticsearch.assembly.descriptor>
             ${project.basedir}/src/main/assemblies/assembly.xml
         </elasticsearch.assembly.descriptor>
