@@ -153,7 +153,9 @@ public abstract class StringHelper {
    * Returns the MurmurHash3_x86_32 hash. Original source/tests at
    * https://github.com/yonik/java_util/
    */
+  /*
   @SuppressWarnings("fallthrough")
+
   public static int murmurhash3_x86_32(byte[] data, int offset, int len, int seed) {
 
     final int c1 = 0xcc9e2d51;
@@ -208,7 +210,7 @@ public abstract class StringHelper {
   public static int murmurhash3_x86_32(BytesRef bytes, int seed) {
     return murmurhash3_x86_32(bytes.bytes, bytes.offset, bytes.length, seed);
   }
-
+*/
   // Holds 128 bit unsigned value:
   private static BigInteger nextId;
   private static final BigInteger mask128;
