@@ -114,10 +114,10 @@ public final class BytesRef implements Comparable<BytesRef>, Cloneable {
    * <p>This is currently implemented as MurmurHash3 (32 bit), using the seed from {@link
    * StringHelper#GOOD_FAST_HASH_SEED}, but is subject to change from release to release.
    */
-//  @Override
-//  public int hashCode() {
-//    return StringHelper.murmurhash3_x86_32(this, StringHelper.GOOD_FAST_HASH_SEED);
-//  }
+  @Override
+  public int hashCode() {
+    return StringHelper.murmurhash3_x86_32(this, StringHelper.GOOD_FAST_HASH_SEED);
+  }
 
   @Override
   public boolean equals(Object other) {
