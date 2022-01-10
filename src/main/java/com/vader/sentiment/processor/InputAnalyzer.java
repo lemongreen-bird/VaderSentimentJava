@@ -74,12 +74,12 @@ class InputAnalyzer implements InputAnalyzerInterface {
     	ByteArrayInputStream inputStream = new ByteArrayInputStream(inputString.getBytes());
     	BufferedReader bufReader = new BufferedReader(new InputStreamReader(inputStream));
     	StreamTokenizer tokenizer = new StreamTokenizer(bufReader);
-    	int tokenType = -4;
-    	
-    	tokenType = tokenizer.nextToken();
+    	int tokenType = tokenizer.nextToken();
     	
     	while (tokenType != StreamTokenizer.TT_EOF) {
     		tokenConsumer.accept(tokenizer.toString());
+    		
+    		tokenType = tokenizer.nextToken();
     	}
     	
     	bufReader.close();
