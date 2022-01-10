@@ -85,8 +85,12 @@ public final class TextProperties {
     private List<String> tokensAftersKeepingEmoticons(final String unTokenizedText,
                                                       final Set<String> tokensWithoutPunctuations) throws IOException {
         final List<String> wordsAndEmoticonsList = new ArrayList<>();
+        final List<String> wordsAndEmoticonsList2 = new ArrayList<>();
         new InputAnalyzer().keepPunctuation(unTokenizedText, wordsAndEmoticonsList::add);
+        new InputAnalyzer().tokenize2(unTokenizedText, true, wordsAndEmoticonsList2::add);
         wordsAndEmoticonsList.replaceAll(t -> stripPunctuations(t, tokensWithoutPunctuations));
+        wordsAndEmoticonsList2.replaceAll(t -> stripPunctuations(t, tokensWithoutPunctuations));
+        System.out.println(wordsAndEmoticonsList2);
         return wordsAndEmoticonsList;
     }
 
