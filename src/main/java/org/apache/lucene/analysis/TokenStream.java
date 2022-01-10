@@ -85,6 +85,7 @@ public abstract class TokenStream extends AttributeSource implements Closeable {
   /** A TokenStream using the default attribute factory. */
   protected TokenStream() {
     super(DEFAULT_TOKEN_ATTRIBUTE_FACTORY);
+	System.out.println(DEFAULT_TOKEN_ATTRIBUTE_FACTORY.getClass().getSimpleName());
     assert assertFinal();
   }
 

@@ -24,7 +24,11 @@
 
 package com.vader.sentiment.processor;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.StreamTokenizer;
 import java.io.StringReader;
 import java.util.function.Consumer;
 import org.apache.lucene.analysis.TokenStream;
@@ -63,6 +67,23 @@ class InputAnalyzer implements InputAnalyzerInterface {
 
             tokenStream.end();
         }
+    }
+    
+    protected void tokenize2(final String inputString, boolean keepPunctuation,
+            final Consumer<String> tokenConsumer) throws IOException {
+    	ByteArrayInputStream inputStream = new ByteArrayInputStream(inputString.getBytes());
+    	BufferedReader bufReader = new BufferedReader(new InputStreamReader(inputStream));
+    	StreamTokenizer tokenizer = new StreamTokenizer(bufReader);
+    	int tokenType = -4;
+    	
+    	tokenType = tokenizer.nextToken();
+    	
+    	while (tokenType != StreamTokenizer.TT_EOF) {
+    		tokenConsumer.accept(tokenizer.toString());
+    	}
+    	
+    	bufReader.close();
+    	inputStream.close();
     }
 
     /**
