@@ -28,80 +28,79 @@ import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.StreamTokenizer;
-import java.io.StringReader;
 import java.util.function.Consumer;
-import org.apache.lucene.analysis.TokenStream;
-import org.apache.lucene.analysis.Tokenizer;
-import org.apache.lucene.analysis.core.WhitespaceTokenizer;
-import org.apache.lucene.analysis.miscellaneous.LengthFilter;
-import org.apache.lucene.analysis.standard.StandardTokenizer;
-import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
- * This class defines a Lucene analyzer that is applied on the input string in
- * {@link com.vader.sentiment.analyzer.SentimentAnalyzer}.
- *
- * @author Animesh Pandey
+ * This class replaces the Lucene analyzer that is applied on the input string
+ * in the original VaderSentimentJava.
  */
 class InputAnalyzer implements InputAnalyzerInterface {
-    /**
-     * This function applies a Lucene tokenizer that splits a string into a tokens.
-     *
-     * @param inputString   The input string to be pre-processed with Lucene tokenizer
-     * @param tokenizer     The tokenizer to use for processing the input string
-     * @param tokenConsumer The consumer of the tokens
-     * @throws IOException if Lucene's tokenizer encounters any error
-     */
-    protected void tokenize(final String inputString, final Tokenizer tokenizer,
-                            final Consumer<String> tokenConsumer) throws IOException {
-        tokenizer.setReader(new StringReader(inputString));
 
-        try (TokenStream tokenStream = new LengthFilter(tokenizer, 2, Integer.MAX_VALUE)) {
-            final CharTermAttribute charTermAttribute = tokenStream.addAttribute(CharTermAttribute.class);
-            tokenStream.reset();
+	/**
+	 * This function splits a string into tokens from the white space.
+	 *
+	 * @param inputString   The input string to be pre-processed into tokens
+	 * @param tokenConsumer The consumer of the tokens
+	 * @throws IOException tokenizer encounters any error
+	 */
+	@Override
+	public void keepPunctuation(final String inputString, final Consumer<String> tokenConsumer) throws IOException {
+		ByteArrayInputStream inputStream = new ByteArrayInputStream(inputString.getBytes());
+		BufferedReader bufReader = new BufferedReader(new InputStreamReader(inputStream));
 
-            while (tokenStream.incrementToken()) {
-                tokenConsumer.accept(charTermAttribute.toString());
-            }
+		String line = bufReader.readLine();
 
-            tokenStream.end();
-        }
-    }
-    
-    protected void tokenize2(final String inputString, boolean keepPunctuation,
-            final Consumer<String> tokenConsumer) throws IOException {
-    	ByteArrayInputStream inputStream = new ByteArrayInputStream(inputString.getBytes());
-    	BufferedReader bufReader = new BufferedReader(new InputStreamReader(inputStream));
-    	StreamTokenizer tokenizer = new StreamTokenizer(bufReader);
-    	int tokenType = tokenizer.nextToken();
-    	
-    	while (tokenType != StreamTokenizer.TT_EOF) {
-    		tokenConsumer.accept(tokenizer.toString());
-    		
-    		tokenType = tokenizer.nextToken();
-    	}
-    	
-    	bufReader.close();
-    	inputStream.close();
-    }
+		while (line != null) {
+			String[] tokens = line.split("[\\s]+");
 
-    /**
-     * Performs tokenization using Lucene's {@link WhitespaceTokenizer}, which tokenizes from the white spaces.
-     * {@inheritDoc}
-     */
-    @Override
-    public void keepPunctuation(final String inputString, final Consumer<String> tokenConsumer) throws IOException {
-        tokenize(inputString, new WhitespaceTokenizer(), tokenConsumer);
-    }
+			for (String token : tokens) {
+				if (token.length() > 1)
+					tokenConsumer.accept(token);
+			}
 
-    /**
-     * Performs tokenization using Lucene's {@link StandardTokenizer}, which tokenizes from white space
-     * as well as removed any punctuations.
-     * {@inheritDoc}
-     */
-    @Override
-    public void removePunctuation(final String inputString, final Consumer<String> tokenConsumer) throws IOException {
-        tokenize(inputString, new StandardTokenizer(), tokenConsumer);
-    }
+			line = bufReader.readLine();
+		}
+
+		bufReader.close();
+		inputStream.close();
+	}
+
+	/**
+	 * This function splits a string into a tokens from the white space and removes punctuation.
+	 *
+	 * @param inputString   The input string to be pre-processed into tokens
+	 * @param tokenConsumer The consumer of the tokens
+	 * @throws IOException tokenizer encounters any error
+	 */
+	@Override
+	public void removePunctuation(final String inputString, final Consumer<String> tokenConsumer) throws IOException {
+		ByteArrayInputStream inputStream = new ByteArrayInputStream(inputString.getBytes());
+		BufferedReader bufReader = new BufferedReader(new InputStreamReader(inputStream));
+
+		String line = bufReader.readLine();
+
+		while (line != null) {
+			String[] tokens;
+
+			Matcher m = Pattern.compile("(\\p{Punct}+)(\\s+|$)").matcher(line);
+			String noPunctuation = m.replaceAll(" ");
+
+			Matcher n = Pattern.compile("(^|\\s+)(\\p{Punct}+)").matcher(noPunctuation);
+			noPunctuation = n.replaceAll(" ");
+
+			tokens = noPunctuation.split("[\\s]+");
+
+			for (String token : tokens) {
+				if (token.length() > 1)
+					tokenConsumer.accept(token);
+			}
+
+			line = bufReader.readLine();
+		}
+
+		bufReader.close();
+		inputStream.close();
+	}
 }
